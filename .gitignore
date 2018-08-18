@@ -1,0 +1,14 @@
+*.out
+*.pyc
+*.log
+tmp_*.*
+__pycache__
+.pytest_cache
+*_output
+
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

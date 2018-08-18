@@ -1,0 +1,64 @@
+version: 1
+disable_existing_loggers: True
+formatters:
+  File:
+    format: "%(asctime)s - %(levelname)-8s IN (%(filename)s | %(module)s,%(funcName)s,%(lineno)d) (threadName :%(threadName)s)  \n%(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  Console:
+    format: "%(asctime)s  -   %(levelname)-8s  -  %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  Params:
+    format: "%(asctime)s - %(levelname)-8s  %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+handlers:
+#存储info日志-指定大小轮询
+  INFO:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: File
+#    外层做了替换为绝对路径的处理
+    filename: "log/jertty_stdout.log"
+    mode: 'a'
+    maxBytes: 1024*1024
+    encoding: "utf-8"
+    backupCount: 10
+    delay: True
+#存储error日志-每周轮询
+  ERR:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: ERROR
+    formatter: File
+#    外层做了替换为绝对路径的处理
+    filename: "log/error.log"
+    when: "W6"
+    interval: 1
+    backupCount: 7
+    delay: True
+#控制台打印调试日志
+  DEBUG:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: Console
+    stream: ext://sys.stdout
+#入参、结果打印
+  PARAMS:
+    class: logging.handlers.WatchedFileHandler
+    level: INFO
+    formatter: Params
+#    外层做了替换为绝对路径的处理
+    filename: "log/jertty_stdout.log"
+    mode: 'a'
+    encoding: "utf-8"
+    delay: True
+loggers:
+  PARAMS:
+    level: INFO
+    handlers: [PARAMS]
+    propagate: no
+  DEBUG:
+    level: DEBUG
+    handlers: [DEBUG]
+    propagate: no
+root:
+  level: INFO
+  handlers: [INFO, ERR]
