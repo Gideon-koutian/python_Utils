@@ -4,6 +4,7 @@ from flask import Blueprint, make_response, jsonify
 
 r_AF = Blueprint(__name__.split('.')[-1], __name__)
 r_AF.url_prefix = f"/actual_{__name__.split('.')[-1]}"
+_PORT = 6643
 
 from . import af_v1
 from . import af_v2

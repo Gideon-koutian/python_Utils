@@ -4,6 +4,7 @@ from flask import Blueprint, make_response, jsonify
 
 r_EDR = Blueprint(__name__.split('.')[-1], __name__)
 r_EDR.url_prefix = f"/actual_{__name__.split('.')[-1]}"
+_PORT = 7443
 
 from . import edr_v1
 

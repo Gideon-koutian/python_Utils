@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging as _logging
 import sys
+import getopt
 
 from flask import *
 from loguru import logger
@@ -95,14 +96,21 @@ def after_request(response):
     return response
 
 
-def load_web():
+def load_web(port: int):
+    """
+    load blueprint
+    :param port:
+    :return:
+    """
     for name in find_modules('Interface', include_packages=True):
-        APP.register_blueprint(getattr(import_string(name), f"r_{name.split('.')[-1]}", None))
+        _module = import_string(name)
+        if 'AutoTest' in name or int(port) == getattr(_module, '_PORT', None):
+            APP.register_blueprint(getattr(_module, f"r_{name.split('.')[-1]}", None))
 
 
-def main():
-    # print(APP.url_map)
-    APP.run(debug=True, ssl_context='adhoc', host='0.0.0.0', port='7443')
+def main(port=7443):
+    print(APP.url_map)
+    APP.run(debug=True, ssl_context='adhoc', host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
@@ -112,5 +120,18 @@ if __name__ == '__main__':
         联动策略下发（成功、失败）
         资产、在线用户信息同步（支持mock）
     """
-    load_web()
-    main()
+    port = None
+    opts, args = getopt.getopt(sys.argv[1:], '-h-p:', ['help', 'port='])
+    for opt_name, opt_value in opts:
+        if opt_name in ('-h', '--help'):
+            print("[*] Help info")
+            sys.exit(0)
+        elif opt_name in ('-p', '--port'):
+            port = int(opt_value)
+
+    if not port:
+        print("PARAM: port is must")
+        sys.exit(-1)
+
+    load_web(port)
+    main(port)
