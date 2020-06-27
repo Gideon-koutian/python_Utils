@@ -96,7 +96,7 @@ def after_request(response):
     return response
 
 
-def load_web(port: int):
+def __load_web(port: int):
     """
     load blueprint
     :param port:
@@ -108,9 +108,18 @@ def load_web(port: int):
             APP.register_blueprint(getattr(_module, f"r_{name.split('.')[-1]}", None))
 
 
-def main(port=7443):
+def __app(port=7443):
     print(APP.url_map)
     APP.run(debug=True, ssl_context='adhoc', host='0.0.0.0', port=port)
+
+
+def run(port):
+    _p = int(port)
+
+    if not (0 < _p <= 65535):
+        raise RuntimeError("invaild port range")
+    __load_web(_p)
+    __app(_p)
 
 
 if __name__ == '__main__':
@@ -133,5 +142,5 @@ if __name__ == '__main__':
         print("PARAM: port is must")
         sys.exit(-1)
 
-    load_web(port)
-    main(port)
+    __load_web(port)
+    __app(port)
