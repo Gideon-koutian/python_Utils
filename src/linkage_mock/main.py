@@ -92,6 +92,27 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', '*')
 
     # 根据需求更改返回json以及status_code
+    _replace = ip_pool.has_diy_return(g.request_ip, g.local_ip, g.interface)
+    if _replace[0]:
+        status_code = _replace[1].get('status_code', None)
+        headers = _replace[1].get('headers', {})
+        data = _replace[1].get('data', {})
+
+        response.status_code = status_code if status_code else response.status_code
+
+        if headers:
+            for k in headers:
+                response.headers[k] = headers[k]
+
+        _replace_type = data.pop('_replace_type', 'all')
+        if _replace_type not in ['all', 'replace']:
+            _replace_type = 'all'
+
+        if 'all' == _replace_type:
+            response.set_data(json.dumps(data))
+        else:
+            for d in data:
+                response.json[d] = data[d]
 
     return response
 

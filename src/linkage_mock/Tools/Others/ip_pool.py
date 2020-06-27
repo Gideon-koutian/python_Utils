@@ -103,6 +103,19 @@ def proxy(url, *args, **kwargs):
     return response
 
 
+def has_diy_return(sip_ip, dev_ip, interface):
+    key = (dev_ip, sip_ip)
+
+    if key not in DeviceMap:
+        return False, None
+
+    _diyReturn = {}
+    if interface not in _diyReturn:
+        return False, None
+    else:
+        return True, {'status_code': 500, 'headers': {}, 'data': {'msg': 'test'}}
+
+
 def get_host_ip():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.connect(('8.8.8.8', 80))
